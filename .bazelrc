@@ -1,0 +1,31 @@
+# Bazel configuration for f2chat
+
+# C++20 standard (Google C++ Style Guide target)
+build --cxxopt=-std=c++20
+build --host_cxxopt=-std=c++20
+
+# Warnings (Google C++ Style Guide: -Wall -Werror)
+build --cxxopt=-Wall
+build --cxxopt=-Wextra
+build --cxxopt=-Werror
+
+# Optimization
+build --cxxopt=-O2
+
+# Debug symbols
+build --cxxopt=-g
+
+# Use modern C++ features
+build --cxxopt=-fno-exceptions  # Google style: no exceptions
+
+# Test configuration
+test --test_output=errors
+test --test_summary=detailed
+
+# Build modes
+build:opt --compilation_mode=opt
+build:dbg --compilation_mode=dbg
+build:fastbuild --compilation_mode=fastbuild
+
+# Default to fastbuild for development
+build --compilation_mode=fastbuild

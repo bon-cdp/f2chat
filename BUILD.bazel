@@ -1,0 +1,16 @@
+# Root BUILD file for f2chat
+
+package(default_visibility = ["//visibility:public"])
+
+# Declare supported C++ standard
+# Google C++ Style Guide targets C++20
+cc_library(
+    name = "f2chat_config",
+    hdrs = ["lib/util/config.h"],
+    copts = [
+        "-std=c++20",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+    ],
+)
