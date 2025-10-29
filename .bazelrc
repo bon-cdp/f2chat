@@ -1,13 +1,30 @@
 # Bazel configuration for f2chat
 
+# Use bzlmod (Bazel 8+)
+common --enable_bzlmod
+
 # C++20 standard (Google C++ Style Guide target)
 build --cxxopt=-std=c++20
 build --host_cxxopt=-std=c++20
+
+# OpenFHE system library paths (installed at /usr/local)
+# Use -isystem to suppress warnings from OpenFHE headers
+build --cxxopt=-isystem/usr/local/include/openfhe
+build --cxxopt=-isystem/usr/local/include/openfhe/core
+build --cxxopt=-isystem/usr/local/include/openfhe/pke
+build --cxxopt=-isystem/usr/local/include/openfhe/binfhe
 
 # Warnings (Google C++ Style Guide: -Wall -Werror)
 build --cxxopt=-Wall
 build --cxxopt=-Wextra
 build --cxxopt=-Werror
+
+# Suppress specific warnings that are false positives in external dependencies
+# GCC's static analyzer produces false positives for maybe-uninitialized in Abseil
+# This is a known issue with GCC + Abseil's InlinedVector implementation
+# See: https://github.com/abseil/abseil-cpp/issues/1693
+# TODO(Phase 2): Upgrade to abseil-cpp 20250814.1 and retest (may still need suppression)
+build --cxxopt=-Wno-error=maybe-uninitialized
 
 # Optimization
 build --cxxopt=-O2
@@ -16,7 +33,8 @@ build --cxxopt=-O2
 build --cxxopt=-g
 
 # Use modern C++ features
-build --cxxopt=-fno-exceptions  # Google style: no exceptions
+# Note: OpenFHE requires exceptions, so we cannot use -fno-exceptions
+# This deviates from Google C++ Style Guide, but is necessary for OpenFHE integration
 
 # Test configuration
 test --test_output=errors

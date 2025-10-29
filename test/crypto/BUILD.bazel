@@ -1,0 +1,18 @@
+# Copyright 2025 f2chat Contributors
+# Licensed under the Apache License, Version 2.0
+
+load("@rules_cc//cc:defs.bzl", "cc_test")
+
+package(default_visibility = ["//visibility:public"])
+
+cc_test(
+    name = "fhe_context_test",
+    size = "medium",  # FHE operations are slow
+    srcs = ["fhe_context_test.cc"],
+    deps = [
+        "//lib/crypto:fhe_context",
+        "//lib/util:config",
+        "//third_party/openfhe",
+        "@com_google_googletest//:gtest_main",
+    ],
+)

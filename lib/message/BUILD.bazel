@@ -1,0 +1,19 @@
+# Copyright 2025 f2chat Contributors
+# Licensed under the Apache License, Version 2.0
+
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
+package(default_visibility = ["//visibility:public"])
+
+cc_library(
+    name = "encrypted_message",
+    srcs = ["encrypted_message.cc"],
+    hdrs = ["encrypted_message.h"],
+    deps = [
+        "//third_party/openfhe",
+        "@com_google_absl//absl/status",
+        "@com_google_absl//absl/status:statusor",
+        "@com_google_absl//absl/strings",
+        "@com_google_absl//absl/time",
+    ],
+)

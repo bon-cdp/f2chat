@@ -1,0 +1,21 @@
+# Copyright 2025 f2chat Contributors
+# Licensed under the Apache License, Version 2.0
+
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
+package(default_visibility = ["//visibility:public"])
+
+cc_library(
+    name = "simd_batch",
+    srcs = ["simd_batch.cc"],
+    hdrs = ["simd_batch.h"],
+    deps = [
+        "//lib/crypto:fhe_context",
+        "//lib/crypto:server_key_manager",
+        "//lib/message:encrypted_message",
+        "//third_party/openfhe",
+        "@com_google_absl//absl/status",
+        "@com_google_absl//absl/status:statusor",
+        "@com_google_absl//absl/strings",
+    ],
+)

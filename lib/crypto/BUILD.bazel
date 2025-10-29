@@ -9,25 +9,36 @@ cc_library(
     name = "fhe_context",
     srcs = ["fhe_context.cc"],
     hdrs = ["fhe_context.h"],
-    copts = [
-        "-std=c++20",
-        "-Wall",
-        "-Wextra",
-        "-Werror",
-    ],
     deps = [
         "//lib/util:config",
+        "//third_party/openfhe",
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/status:statusor",
         "@com_google_absl//absl/strings",
-        # OpenFHE (system dependency)
-        # Note: Requires OpenFHE installed on system
-        # Install: sudo apt-get install libopenfhe-dev (Ubuntu)
-        #          brew install openfhe (macOS)
     ],
-    linkopts = [
-        "-lOPENFHEcore",
-        "-lOPENFHEpke",
-        "-lOPENFHEbinfhe",
+)
+
+cc_library(
+    name = "fhe_operations",
+    srcs = ["fhe_operations.cc"],
+    hdrs = ["fhe_operations.h"],
+    deps = [
+        "//third_party/openfhe",
+        "@com_google_absl//absl/status",
+        "@com_google_absl//absl/status:statusor",
+        "@com_google_absl//absl/strings",
+    ],
+)
+
+cc_library(
+    name = "server_key_manager",
+    srcs = ["server_key_manager.cc"],
+    hdrs = ["server_key_manager.h"],
+    deps = [
+        ":fhe_context",
+        "//third_party/openfhe",
+        "@com_google_absl//absl/status",
+        "@com_google_absl//absl/status:statusor",
+        "@com_google_absl//absl/strings",
     ],
 )

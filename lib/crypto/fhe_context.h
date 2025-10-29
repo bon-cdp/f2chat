@@ -13,23 +13,10 @@
 #include "lib/util/config.h"
 
 // Forward declarations (OpenFHE types)
-// This avoids exposing OpenFHE headers in our public API
-namespace lbcrypto {
-template <typename T> class CryptoContextImpl;
-class DCRTPoly;
-template <typename T> class KeyPair;
-template <typename T> class PublicKeyImpl;
-template <typename T> class PrivateKeyImpl;
-template <typename T> class CiphertextImpl;
-template <typename T> class EvalKeyImpl;
-
-using CryptoContext = std::shared_ptr<CryptoContextImpl<DCRTPoly>>;
-using KeyPairDCRTPoly = KeyPair<DCRTPoly>;
-using PublicKey = std::shared_ptr<PublicKeyImpl<DCRTPoly>>;
-using PrivateKey = std::shared_ptr<PrivateKeyImpl<DCRTPoly>>;
-using Ciphertext = std::shared_ptr<CiphertextImpl<DCRTPoly>>;
-using EvalKey = std::shared_ptr<EvalKeyImpl<DCRTPoly>>;
-}  // namespace lbcrypto
+// We cannot forward-declare the full OpenFHE types here because they conflict
+// with OpenFHE's actual definitions. Instead, we just include the header.
+// This is acceptable since only .cc files will include this header.
+#include "openfhe.h"
 
 namespace f2chat {
 
@@ -143,7 +130,7 @@ class FheContext {
   //   Error status if encryption fails
   //
   // Performance: ~50-100ms for typical message
-  absl::StatusOr<std::shared_ptr<lbcrypto::Ciphertext>> Encrypt(
+  absl::StatusOr<lbcrypto::Ciphertext> Encrypt(
       const std::string& plaintext,
       const PublicKey& public_key) const;
 
@@ -156,7 +143,7 @@ class FheContext {
   //
   // Returns:
   //   Ciphertext with values packed in SIMD slots
-  absl::StatusOr<std::shared_ptr<lbcrypto::Ciphertext>> EncryptVector(
+  absl::StatusOr<lbcrypto::Ciphertext> EncryptVector(
       const std::vector<int64_t>& plaintext,
       const PublicKey& public_key) const;
 
@@ -174,7 +161,7 @@ class FheContext {
   //
   // Performance: ~50-100ms
   absl::StatusOr<std::string> Decrypt(
-      const std::shared_ptr<lbcrypto::Ciphertext>& ciphertext,
+      const lbcrypto::Ciphertext& ciphertext,
       const SecretKey& secret_key) const;
 
   // Decrypt to vector of integers (for SIMD batching).
@@ -182,7 +169,7 @@ class FheContext {
   // Returns:
   //   Vector of decrypted integers (length = slot_count)
   absl::StatusOr<std::vector<int64_t>> DecryptVector(
-      const std::shared_ptr<lbcrypto::Ciphertext>& ciphertext,
+      const lbcrypto::Ciphertext& ciphertext,
       const SecretKey& secret_key) const;
 
   // ===== Accessors =====

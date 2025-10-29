@@ -137,7 +137,7 @@ absl::StatusOr<KeyPair> FheContext::GenerateKeys() const {
   return keypair;
 }
 
-absl::StatusOr<std::shared_ptr<lbcrypto::Ciphertext>> FheContext::Encrypt(
+absl::StatusOr<lbcrypto::Ciphertext> FheContext::Encrypt(
     const std::string& plaintext,
     const PublicKey& public_key) const {
   // Convert string to vector of integers (ASCII values)
@@ -154,7 +154,7 @@ absl::StatusOr<std::shared_ptr<lbcrypto::Ciphertext>> FheContext::Encrypt(
   return EncryptVector(plaintext_values, public_key);
 }
 
-absl::StatusOr<std::shared_ptr<lbcrypto::Ciphertext>> FheContext::EncryptVector(
+absl::StatusOr<lbcrypto::Ciphertext> FheContext::EncryptVector(
     const std::vector<int64_t>& plaintext,
     const PublicKey& public_key) const {
   if (plaintext.size() > static_cast<size_t>(params_.slot_count)) {
@@ -183,7 +183,7 @@ absl::StatusOr<std::shared_ptr<lbcrypto::Ciphertext>> FheContext::EncryptVector(
 }
 
 absl::StatusOr<std::string> FheContext::Decrypt(
-    const std::shared_ptr<lbcrypto::Ciphertext>& ciphertext,
+    const lbcrypto::Ciphertext& ciphertext,
     const SecretKey& secret_key) const {
   // Decrypt to vector
   auto plaintext_vector_or = DecryptVector(ciphertext, secret_key);
@@ -209,7 +209,7 @@ absl::StatusOr<std::string> FheContext::Decrypt(
 }
 
 absl::StatusOr<std::vector<int64_t>> FheContext::DecryptVector(
-    const std::shared_ptr<lbcrypto::Ciphertext>& ciphertext,
+    const lbcrypto::Ciphertext& ciphertext,
     const SecretKey& secret_key) const {
   if (!ciphertext) {
     return absl::InvalidArgumentError("Ciphertext is null");
@@ -225,13 +225,14 @@ absl::StatusOr<std::vector<int64_t>> FheContext::DecryptVector(
     }
 
     // Extract values from SIMD slots
+    plaintext->SetLength(params_.slot_count);
     const auto& packed_values = plaintext->GetPackedValue();
 
     // Convert to int64_t vector
     std::vector<int64_t> result;
     result.reserve(packed_values.size());
     for (const auto& value : packed_values) {
-      result.push_back(value.ConvertToInt());
+      result.push_back(value);  // OpenFHE already returns int64_t
     }
 
     return result;

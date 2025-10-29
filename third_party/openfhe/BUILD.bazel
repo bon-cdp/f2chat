@@ -1,0 +1,67 @@
+# Copyright 2025 f2chat Contributors
+# Licensed under the Apache License, Version 2.0
+
+# OpenFHE wrapper for system-installed OpenFHE library.
+# This provides a clean Bazel interface to OpenFHE without hardcoding paths
+# in every target.
+
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
+package(default_visibility = ["//visibility:public"])
+
+# OpenFHE core library (basic cryptographic context, keys, parameters)
+cc_library(
+    name = "openfhe_core",
+    # No header files declared here since we're wrapping a system library.
+    # Use -isystem to add system include paths (suppresses warnings)
+    linkopts = [
+        "-L/usr/local/lib",
+        "-lOPENFHEcore",
+    ],
+    copts = [
+        "-isystem/usr/local/include/openfhe",
+        "-isystem/usr/local/include/openfhe/core",
+        "-w",  # Suppress all warnings from OpenFHE headers (research code quality)
+        "-Wno-unknown-pragmas",  # OpenFHE uses OpenMP pragmas
+    ],
+)
+
+# OpenFHE PKE (Public Key Encryption) library - BGV, BFV, CKKS schemes
+cc_library(
+    name = "openfhe_pke",
+    linkopts = [
+        "-lOPENFHEpke",
+    ],
+    copts = [
+        "-isystem/usr/local/include/openfhe/pke",
+        "-w",
+        "-Wno-unknown-pragmas",
+    ],
+    deps = [":openfhe_core"],
+)
+
+# OpenFHE BinFHE (Binary FHE) library - FHEW, TFHE schemes
+# Note: Not currently used in f2chat (we use BGV from PKE), but included for completeness
+cc_library(
+    name = "openfhe_binfhe",
+    linkopts = [
+        "-lOPENFHEbinfhe",
+    ],
+    copts = [
+        "-isystem/usr/local/include/openfhe/binfhe",
+        "-w",
+        "-Wno-unknown-pragmas",
+    ],
+    deps = [":openfhe_core"],
+)
+
+# Convenience target: All OpenFHE libraries together
+# Most targets should use this unless they specifically need only core/pke/binfhe
+cc_library(
+    name = "openfhe",
+    deps = [
+        ":openfhe_core",
+        ":openfhe_pke",
+        ":openfhe_binfhe",
+    ],
+)
