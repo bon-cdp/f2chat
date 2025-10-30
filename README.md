@@ -1,9 +1,4 @@
-**Context:** You are building a research-grade cryptographic messaging system that uses Fully Homomorphic Encryption (FHE) to protect **metadata** (who talks to whom), not just       
- message content. This is a novel approach to defeating metadata surveillance (NSA PRISM, government tracking of dissidents).                                                           
-                                                                                                                                                                                        
- **Core Innovation:** FHE-encrypted sender/receiver identities + serverless threshold decryption for distributed trust at 1/1000th the cost of traditional federated servers.           
-                                                                                                                                                                                        
- ---                                                                                                                                                                                    
+                                                                                                                                                                                    
                                                                                                                                                                                         
  ## Project Overview                                                                                                                                                                    
                                                                                                                                                                                         
@@ -1160,35 +1155,4 @@
                                                                                                                                                                                         
  ---                                                                                                                                                                                    
                                                                                                                                                                                         
- ## Final Notes for the Agent                                                                                                                                                           
-                                                                                                                                                                                        
- **You are building a research system, not a production app.** Priorities:                                                                                                              
-                                                                                                                                                                                        
- 1. **Correctness:** Security proofs, formal threat model                                                                                                                               
- 2. **Performance:** Meet latency targets, document benchmarks                                                                                                                          
- 3. **Reproducibility:** All experiments must be reproducible                                                                                                                           
- 4. **Clarity:** Code should be readable (it will be open-sourced)                                                                                                                      
-                                                                                                                                                                                        
- **Don't cut corners on:**                                                                                                                                                              
- - Tests (100% coverage for crypto)                                                                                                                                                     
- - Documentation (every method has perf notes)                                                                                                                                          
- - Security (acknowledge all limitations)                                                                                                                                               
-                                                                                                                                                                                        
- **You can defer:**                                                                                                                                                                     
- - UI polish (CLI is fine)                                                                                                                                                              
- - Error messages (StatusOr is enough)                                                                                                                                                  
- - Production hardening (this is research)                                                                                                                                              
-                                                                                                                                                                                        
- **When in doubt, ask yourself:**                                                                                                                                                       
- "Would this impress a USENIX Security reviewer?"                                                                                                                                       
-                                                                                                                                                                                        
- If yes → do it.                                                                                                                                                                        
- If no → deprioritize.                                                                                                                                                                  
-                                                                                                                                                                                        
- ---                                                                                                                                                                                    
-                                                                                                                                                                                        
- **Good luck building the future of privacy-preserving messaging!** 🚀                                                                                                                  
-                                                                                                                                                                                        
- ---       
-
-ALWAYS USE GOOGLE C++ BEST PRACTICES WHEN YOU CAN.
+ 
