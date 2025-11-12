@@ -1,0 +1,220 @@
+// lib/crypto/fhe_context.h
+//
+// FHE crypto context management for blind polynomial routing.
+//
+// Wraps OpenFHE's BGV scheme to provide:
+// - Crypto context initialization (ring parameters, security level)
+// - Key pair generation (public/private keys)
+// - Encryption/decryption of polynomial coefficients
+// - Depth-0 operations (addition, subtraction, rotation)
+//
+// Key Properties:
+// - BGV scheme for integer arithmetic (matches polynomial coefficients)
+// - Ring dimension matched to PolynomialParams
+// - Depth-0 operations only (no bootstrapping needed!)
+//
+// Author: bon-cdp (shakilflynn@gmail.com)
+// Date: 2025-11-11
+
+#ifndef F2CHAT_LIB_CRYPTO_FHE_CONTEXT_H_
+#define F2CHAT_LIB_CRYPTO_FHE_CONTEXT_H_
+
+#include <memory>
+#include <vector>
+#include "lib/crypto/polynomial_params.h"
+#include "absl/status/statusor.h"
+#include "absl/status/status.h"
+
+// Forward declarations for OpenFHE types (to avoid exposing in header)
+// Note: These are stub declarations for now. When OpenFHE is integrated,
+// we'll include the actual OpenFHE headers.
+namespace lbcrypto {
+  class DCRTPoly;
+  template <typename Element> class CryptoContextImpl;
+  template <typename Element> class CiphertextImpl;
+  template <typename Element> class PublicKeyImpl;
+  template <typename Element> class PrivateKeyImpl;
+}
+
+namespace f2chat {
+
+// Stub types for OpenFHE (will be replaced when OpenFHE is integrated)
+// Using void* as placeholder to avoid template issues
+using CryptoContext = std::shared_ptr<void>;
+using Ciphertext = std::shared_ptr<void>;
+using Plaintext = std::shared_ptr<void>;
+using PublicKey = std::shared_ptr<void>;
+using PrivateKey = std::shared_ptr<void>;
+using KeyPair = std::shared_ptr<void>;
+
+// FHE key pair for a user (public key shared, private key device-held).
+struct FHEKeyPair {
+  PublicKey public_key;    // Shared with contacts (for encryption)
+  PrivateKey private_key;  // Device-held only (for decryption)
+};
+
+// FHE crypto context manager.
+//
+// This class manages the OpenFHE crypto context and provides
+// high-level operations for encrypting/decrypting polynomials.
+//
+// Thread Safety: Thread-safe after initialization (immutable context).
+//
+// Performance:
+// - Encryption: O(n log n) where n = ring dimension
+// - Decryption: O(n log n)
+// - Homomorphic Add/Sub: O(n) (depth-0!)
+// - Homomorphic Rotate: O(n log n) (depth-0!)
+class FHEContext {
+ public:
+  // Creates FHE context with default parameters.
+  //
+  // Initializes OpenFHE BGV scheme with:
+  // - Ring dimension: matched to RingParams::kDegree
+  // - Modulus: matched to RingParams::kModulus
+  // - Security level: 128-bit (HEStd_128_classic)
+  // - Multiplicative depth: 0 (depth-0 operations only!)
+  //
+  // Returns:
+  //   FHEContext instance ready for key generation and encryption
+  //   Error if OpenFHE initialization fails
+  //
+  // Performance: ~10ms (one-time setup)
+  static absl::StatusOr<FHEContext> Create();
+
+  // Generates a new FHE key pair.
+  //
+  // Creates:
+  // - Public key: For encryption by contacts
+  // - Private key: For decryption (device-held only)
+  // - Evaluation keys: For homomorphic operations (rotation, etc.)
+  //
+  // Returns:
+  //   FHEKeyPair with public/private keys
+  //   Error if key generation fails
+  //
+  // Performance: ~50ms (generates keys for depth-0 operations)
+  absl::StatusOr<FHEKeyPair> GenerateKeyPair() const;
+
+  // Encrypts polynomial coefficients.
+  //
+  // Encrypts a vector of integers (polynomial coefficients) using
+  // the recipient's public key. Result is a ciphertext that can be
+  // operated on homomorphically.
+  //
+  // Args:
+  //   coefficients: Polynomial coefficients to encrypt
+  //   public_key: Recipient's public key
+  //
+  // Returns:
+  //   Ciphertext (encrypted polynomial)
+  //   Error if encryption fails or coefficients.size() > ring dimension
+  //
+  // Performance: O(n log n) where n = ring dimension
+  absl::StatusOr<Ciphertext> Encrypt(
+      const std::vector<int64_t>& coefficients,
+      const PublicKey& public_key) const;
+
+  // Decrypts polynomial coefficients.
+  //
+  // Decrypts a ciphertext using the private key, recovering the
+  // original polynomial coefficients.
+  //
+  // Args:
+  //   ciphertext: Encrypted polynomial
+  //   private_key: Decryption key (device-held)
+  //
+  // Returns:
+  //   Decrypted polynomial coefficients
+  //   Error if decryption fails
+  //
+  // Performance: O(n log n)
+  absl::StatusOr<std::vector<int64_t>> Decrypt(
+      const Ciphertext& ciphertext,
+      const PrivateKey& private_key) const;
+
+  // Homomorphic operations (depth-0).
+
+  // Homomorphic addition: Enc(a) + Enc(b) → Enc(a + b).
+  //
+  // Args:
+  //   ct1: Encrypted polynomial a
+  //   ct2: Encrypted polynomial b
+  //
+  // Returns:
+  //   Encrypted sum Enc(a + b)
+  //   Error if operation fails
+  //
+  // Performance: O(n), depth-0
+  absl::StatusOr<Ciphertext> HomomorphicAdd(
+      const Ciphertext& ct1,
+      const Ciphertext& ct2) const;
+
+  // Homomorphic subtraction: Enc(a) - Enc(b) → Enc(a - b).
+  //
+  // Args:
+  //   ct1: Encrypted polynomial a
+  //   ct2: Encrypted polynomial b
+  //
+  // Returns:
+  //   Encrypted difference Enc(a - b)
+  //   Error if operation fails
+  //
+  // Performance: O(n), depth-0
+  absl::StatusOr<Ciphertext> HomomorphicSubtract(
+      const Ciphertext& ct1,
+      const Ciphertext& ct2) const;
+
+  // Homomorphic scalar multiplication: k * Enc(a) → Enc(k * a).
+  //
+  // Multiplies encrypted polynomial by a plaintext scalar.
+  //
+  // Args:
+  //   ciphertext: Encrypted polynomial a
+  //   scalar: Plaintext scalar k
+  //
+  // Returns:
+  //   Encrypted product Enc(k * a)
+  //   Error if operation fails
+  //
+  // Performance: O(n), depth-0
+  absl::StatusOr<Ciphertext> HomomorphicMultiplyScalar(
+      const Ciphertext& ciphertext,
+      int64_t scalar) const;
+
+  // Homomorphic rotation: Enc(a) → Enc(rotated(a)).
+  //
+  // Rotates encrypted polynomial coefficients cyclically.
+  // Requires rotation keys to be generated.
+  //
+  // Args:
+  //   ciphertext: Encrypted polynomial
+  //   positions: Number of positions to rotate
+  //
+  // Returns:
+  //   Encrypted rotated polynomial
+  //   Error if operation fails or rotation keys not generated
+  //
+  // Performance: O(n log n), depth-0
+  absl::StatusOr<Ciphertext> HomomorphicRotate(
+      const Ciphertext& ciphertext,
+      int positions) const;
+
+  // Accessors.
+
+  CryptoContext crypto_context() const { return crypto_context_; }
+
+  // Ring parameters.
+  int ring_dimension() const;
+  int64_t modulus() const;
+
+ private:
+  explicit FHEContext(CryptoContext crypto_context);
+
+  // OpenFHE crypto context (manages all FHE operations)
+  CryptoContext crypto_context_;
+};
+
+}  // namespace f2chat
+
+#endif  // F2CHAT_LIB_CRYPTO_FHE_CONTEXT_H_

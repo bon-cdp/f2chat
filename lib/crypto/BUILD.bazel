@@ -40,3 +40,31 @@ cc_library(
     ],
     visibility = ["//visibility:public"],
 )
+
+cc_library(
+    name = "fhe_context",
+    hdrs = ["fhe_context.h"],
+    srcs = ["fhe_context.cc"],
+    deps = [
+        ":polynomial",
+        "@com_google_absl//absl/status",
+        "@com_google_absl//absl/status:statusor",
+        "@com_google_absl//absl/strings",
+        # "@openfhe//:openfhe_pke",  # Uncomment when OpenFHE build is working
+    ],
+    visibility = ["//visibility:public"],
+)
+
+cc_library(
+    name = "encrypted_polynomial",
+    hdrs = ["encrypted_polynomial.h"],
+    srcs = ["encrypted_polynomial.cc"],
+    deps = [
+        ":polynomial",
+        ":fhe_context",
+        "@com_google_absl//absl/status",
+        "@com_google_absl//absl/status:statusor",
+        "@com_google_absl//absl/strings",
+    ],
+    visibility = ["//visibility:public"],
+)

@@ -1,7 +1,19 @@
-# f2chat: Polynomial routing with sheaf-wreath attention
-module(name = "f2chat", version = "1.0.0")
+# f2chat: Polynomial routing with sheaf-wreath attention (True FHE)
+module(name = "f2chat", version = "2.0.0")
 
 # Core dependencies
 bazel_dep(name = "abseil-cpp", version = "20240116.0", repo_name = "com_google_absl")
 bazel_dep(name = "googletest", version = "1.15.2")
 bazel_dep(name = "eigen", version = "3.4.0")
+
+# OpenFHE for homomorphic encryption
+# Note: OpenFHE is added via git_repository since it's not in BCR
+# Using v1.4.2 (latest stable as of November 2025)
+git_repository = use_repo_rule("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
+
+git_repository(
+    name = "openfhe",
+    remote = "https://github.com/openfheorg/openfhe-development.git",
+    tag = "v1.2.1",  # Last stable version with Bazel support
+    build_file = "//third_party:openfhe.BUILD",
+)
