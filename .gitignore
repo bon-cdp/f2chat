@@ -1,0 +1,22 @@
+# Bazel artifacts
+bazel-*
+.bazel
+.bazelignore
+
+# C++ build artifacts
+*.o
+*.so
+*.a
+*.dylib
+*.exe
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,7 @@
+# f2chat: Polynomial routing with sheaf-wreath attention
+module(name = "f2chat", version = "1.0.0")
+
+# Core dependencies
+bazel_dep(name = "abseil-cpp", version = "20240116.0", repo_name = "com_google_absl")
+bazel_dep(name = "googletest", version = "1.15.2")
+bazel_dep(name = "eigen", version = "3.4.0")

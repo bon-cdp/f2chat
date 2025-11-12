@@ -1,0 +1,17 @@
+cc_test(
+    name = "polynomial_test",
+    srcs = ["polynomial_test.cc"],
+    deps = [
+        "//lib/crypto:polynomial",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "polynomial_identity_test",
+    srcs = ["polynomial_identity_test.cc"],
+    deps = [
+        "//lib/crypto:polynomial_identity",
+        "@googletest//:gtest_main",
+    ],
+)

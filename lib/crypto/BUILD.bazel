@@ -1,0 +1,42 @@
+cc_library(
+    name = "polynomial",
+    hdrs = [
+        "polynomial.h",
+        "polynomial_params.h",
+    ],
+    srcs = ["polynomial.cc"],
+    deps = [
+        "@com_google_absl//absl/status",
+        "@com_google_absl//absl/status:statusor",
+        "@com_google_absl//absl/strings",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+cc_library(
+    name = "polynomial_identity",
+    hdrs = ["polynomial_identity.h"],
+    srcs = ["polynomial_identity.cc"],
+    deps = [
+        ":polynomial",
+        "@com_google_absl//absl/status",
+        "@com_google_absl//absl/status:statusor",
+        "@com_google_absl//absl/container:flat_hash_map",
+        "@com_google_absl//absl/strings",
+        "@com_google_absl//absl/time",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+cc_library(
+    name = "routing_polynomial",
+    hdrs = ["routing_polynomial.h"],
+    srcs = ["routing_polynomial.cc"],
+    deps = [
+        ":polynomial",
+        "@com_google_absl//absl/status",
+        "@com_google_absl//absl/status:statusor",
+        "@com_google_absl//absl/strings",
+    ],
+    visibility = ["//visibility:public"],
+)

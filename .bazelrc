@@ -1,0 +1,29 @@
+# f2chat Bazel Configuration
+# Polynomial routing with sheaf-wreath attention
+
+# C++20 with strict warnings
+build --cxxopt=-std=c++20
+build --cxxopt=-Wall
+build --cxxopt=-Wextra
+build --cxxopt=-Werror
+
+# Suppress GCC false positives in Abseil (known issue with InlinedVector)
+build --cxxopt=-Wno-error=maybe-uninitialized
+
+# No exceptions needed (pure polynomial algebra, no OpenFHE)
+build --cxxopt=-fno-exceptions
+
+# Optimization with debug symbols
+build --cxxopt=-O2
+build --cxxopt=-g
+
+# Fast math for polynomial operations
+build --cxxopt=-ffast-math
+
+# Test configuration
+test --test_output=errors
+test --test_summary=detailed
+
+# Address sanitizer (for debugging)
+build:asan --cxxopt=-fsanitize=address
+build:asan --linkopt=-fsanitize=address

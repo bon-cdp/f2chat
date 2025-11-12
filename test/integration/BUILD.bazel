@@ -1,0 +1,24 @@
+cc_test(
+    name = "simple_routing_test",
+    srcs = ["simple_routing_test.cc"],
+    deps = [
+        "//lib/crypto:polynomial",
+        "//lib/crypto:polynomial_identity",
+        "//lib/crypto:routing_polynomial",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "alice_to_bob_test",
+    srcs = ["alice_to_bob_test.cc"],
+    deps = [
+        "//lib/crypto:polynomial",
+        "//lib/crypto:polynomial_identity",
+        "//lib/crypto:routing_polynomial",
+        "//lib/network:patch",
+        "//lib/network:gluing",
+        "//lib/network:sheaf_router",
+        "@googletest//:gtest_main",
+    ],
+)

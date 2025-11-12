@@ -1,0 +1,38 @@
+cc_library(
+    name = "patch",
+    hdrs = ["patch.h"],
+    srcs = ["patch.cc"],
+    deps = [
+        "//lib/crypto:polynomial",
+        "//lib/crypto:routing_polynomial",
+        "@com_google_absl//absl/status:statusor",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+cc_library(
+    name = "gluing",
+    hdrs = ["gluing.h"],
+    srcs = ["gluing.cc"],
+    deps = [
+        "//lib/crypto:polynomial",
+        "@com_google_absl//absl/status:statusor",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+cc_library(
+    name = "sheaf_router",
+    hdrs = ["sheaf_router.h"],
+    srcs = ["sheaf_router.cc"],
+    deps = [
+        ":patch",
+        ":gluing",
+        "//lib/crypto:polynomial",
+        "//lib/crypto:routing_polynomial",
+        "@com_google_absl//absl/status",
+        "@com_google_absl//absl/status:statusor",
+        "@com_google_absl//absl/strings",
+    ],
+    visibility = ["//visibility:public"],
+)
