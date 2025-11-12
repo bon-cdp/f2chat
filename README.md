@@ -296,7 +296,7 @@ bazel test //test/crypto:encrypted_polynomial_test --test_output=all
 
 This project implements:
 > **"An Algebraic Theory of Learnability: Solving Diverse Problems with a Unified Sheaf-Wreath Attention"**
-> bon-cdp (shakilflynn@gmail.com), November 2025
+> bon-cdp (shakilflynn@gmail.com), November 2025: https://github.com/bon-cdp/notes/blob/main/c.pdf
 
 ### Key Theoretical Components
 
